@@ -4,7 +4,7 @@ from discord import File
 import os
 import math
 
-discord_token = "NzM2ODEwNTM5NTQ3NzU0NTc3.Xx0OSQ.7ckhQZjwaD-cJ0vr6dwk49UPuXQ"
+discord_token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 
 bot = Bot(command_prefix='!')
 
