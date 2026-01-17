@@ -1,16 +1,65 @@
 import discord
 from discord.ext import commands, tasks
 from groq import AsyncGroq
+from dotenv import load_dotenv
 import collections
 import itertools
 import random
+import re
+import os
 from pathlib import Path
 
+load_dotenv()
+
 # --- Configuration ---
-TOKEN = 'YOUR_DISCORD_BOT_TOKEN'
-GROQ_API_KEY = 'YOUR_GROQ_API_KEY'
+TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 REQUIRED_ROLE = "Gexy"
 SYSTEM_PROMPT = "You are GexBot, a sarcastic and witty AI."
+
+# --- Model Configuration ---
+SIMPLE_MODEL = 'llama-3.1-8b-instant'      # Fast, cheap for simple messages
+COMPLEX_MODEL = 'llama-3.3-70b-versatile'  # Powerful for complex requests
+
+# Patterns that indicate a simple message (case-insensitive)
+SIMPLE_PATTERNS = [
+    r'^(hi|hello|hey|yo|sup|hiya|howdy)\b',
+    r'^how are you',
+    r'^what\'?s up',
+    r'^good (morning|afternoon|evening|night)',
+    r'^thanks?( you)?$',
+    r'^(yes|no|ok|okay|sure|yep|nope)$',
+    r'^(bye|goodbye|cya|later)$',
+]
+
+# Keywords that force the complex model
+COMPLEX_KEYWORDS = [
+    'explain', 'analyze', 'compare', 'describe in detail',
+    'write a story', 'roleplay', 'pretend', 'imagine',
+    'code', 'debug', 'help me understand', 'think about',
+    'what do you think', 'give me advice', 'summarize',
+]
+
+def select_model(user_input: str) -> str:
+    """Select the appropriate model based on message complexity."""
+    lower_input = user_input.lower().strip()
+
+    # Check for complex keywords first (override simple patterns)
+    for keyword in COMPLEX_KEYWORDS:
+        if keyword in lower_input:
+            return COMPLEX_MODEL
+
+    # Check if it's a simple greeting/response
+    for pattern in SIMPLE_PATTERNS:
+        if re.search(pattern, lower_input, re.IGNORECASE):
+            return SIMPLE_MODEL
+
+    # Short messages (under 20 chars) without complex keywords → simple model
+    if len(lower_input) < 20:
+        return SIMPLE_MODEL
+
+    # Default to complex model for longer/ambiguous messages
+    return COMPLEX_MODEL
 
 # Paths for Gex command
 IMAGES_DIR = Path("images")
@@ -93,9 +142,15 @@ async def chat(ctx, *, user_input: str):
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + memory[channel_id]
 
+    # Select model based on input complexity
+    model = select_model(user_input)
+
     async with ctx.typing():
         try:
-            response = await groq_client.chat.completions.create(model='llama-3.3-70b-versatile', messages=messages)
+            response = await groq_client.chat.completions.create(
+                model=model,
+                messages=messages
+            )
             ai_response = response.choices[0].message.content
             memory[channel_id].append({"role": "assistant", "content": ai_response})
             await ctx.send(ai_response[:2000])
