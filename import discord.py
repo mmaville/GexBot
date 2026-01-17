@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands, tasks
 from groq import AsyncGroq
@@ -7,10 +8,10 @@ import random
 from pathlib import Path
 
 # --- Configuration ---
-TOKEN = 'YOUR_DISCORD_BOT_TOKEN'
-GROQ_API_KEY = 'YOUR_GROQ_API_KEY'
+TOKEN = os.getenv("DISCORD_TOKEN")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 REQUIRED_ROLE = "Gexy"
-SYSTEM_PROMPT = "You are GexBot, a sarcastic and witty AI."
+SYSTEM_PROMPT = "You are Gexy-Bot, a sarcastic and witty AI."
 
 # Paths for Gex command
 IMAGES_DIR = Path("images")
@@ -20,7 +21,7 @@ TEXT_FILE = Path("textlist.txt")
 groq_client = AsyncGroq(api_key=GROQ_API_KEY)
 intents = discord.Intents.default()
 intents.message_content = True 
-bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None) # Disabled default help
 
 # --- Status Loop ---
 STATUS_LIST = itertools.cycle([
@@ -150,4 +151,9 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRole):
         await ctx.send(f"🚫 Only the **{REQUIRED_ROLE}** role can use me.")
 
-bot.run(TOKEN)
+if __name__ == "__main__":
+    if not TOKEN:
+        raise ValueError("DISCORD_TOKEN environment variable not set")
+    if not GROQ_API_KEY:
+        raise ValueError("GROQ_API_KEY environment variable not set")
+    bot.run(TOKEN)
