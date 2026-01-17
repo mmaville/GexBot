@@ -3,17 +3,7 @@ A discord bot that provides a random image from the designated folder, along wit
 
 ## Setup
 
-1. Clone the repository to a server/computer.
-
-1. Create or select a bot in the [Discord Developer Portal](https://discord.com/developers). (`Applications` > `New Application`) or (`Applications` > `My Applications` > `bot-name`).
-
-2. Select `Settings` > `Bot` to display the `Build-a-Bot` page.
-
-3. Find the Token section of the page and click `Copy` to obtain the token.
-
-4. Paste the token into the value of the `discord_token` parameter in `bot.py`.
-
-5. Navigate to the local repository on the machine and run the command `python bot.py` to initiaze the bot.
+TO-DO
 
 ### Dependencies
 
@@ -29,4 +19,21 @@ All image files must be of a valid image filetype and located in `./images/`. Th
 
 ## Usage
 
-* `!gex` - This command displays a random image and quote of Gex the Gecco.
+To start the bot in the background:
+
+`docker compose up -d`
+
+To see the live logs:
+
+`docker compose logs -f`
+
+To stop the bot:
+
+`docker compose down`
+
+### Commands
+
+* `!gex` - Displays a random image and quote attributed to Gex the Gecco.
+* `!chat` - Enter chat mode with GexBot. Remembers the last 10 messages.
+* `!clear` - Deletes the existing chat histormy (memory).
+* `!help` - Lists valid commands and their actions.
