@@ -15,7 +15,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 REQUIRED_ROLE = "Gexy"
-SYSTEM_PROMPT = "You are GexBot, a sarcastic and witty AI."
+SYSTEM_PROMPT_FILE = Path("system_prompt.md")
+SYSTEM_PROMPT = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8").strip()
 
 # --- Model Configuration ---
 SIMPLE_MODEL = 'llama-3.1-8b-instant'      # Fast, cheap for simple messages
