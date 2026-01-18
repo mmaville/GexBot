@@ -98,6 +98,59 @@ class Chat(commands.Cog):
         self.memory[ctx.channel.id] = []
         await ctx.send("🧹 **History cleared.**")
 
+    @commands.command()
+    @commands.has_role(REQUIRED_ROLE)
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def roast(self, ctx, member: discord.Member):
+        """Roast a user in Gex's sarcastic style."""
+        roast_prompt = f"You are Gex the Gecko, known for your sharp wit and pop culture references. Roast the user named '{member.display_name}' in your signature sarcastic style. Keep it playful and funny, not mean-spirited. Include a pop culture reference. Keep it under 200 words."
+
+        async with ctx.typing():
+            try:
+                response = await self.groq_client.chat.completions.create(
+                    model=COMPLEX_MODEL,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": roast_prompt}
+                    ]
+                )
+                roast = response.choices[0].message.content
+                await ctx.send(f"🔥 {member.mention}\n\n{roast[:1900]}")
+            except Exception as e:
+                await ctx.send(f"⚠️ Error: {str(e)}")
+
+    @commands.command()
+    @commands.has_role(REQUIRED_ROLE)
+    @commands.cooldown(1, 60, commands.BucketType.channel)
+    async def vibecheck(self, ctx):
+        """Analyze the current channel's vibe based on recent messages."""
+        # Fetch last 20 messages
+        messages_list = []
+        async for msg in ctx.channel.history(limit=20):
+            if not msg.author.bot and msg.content:
+                messages_list.append(f"{msg.author.display_name}: {msg.content}")
+
+        if len(messages_list) < 3:
+            await ctx.send("Not enough messages to vibe check! Need at least 3 recent messages.")
+            return
+
+        messages_text = "\n".join(reversed(messages_list))
+        vibe_prompt = f"You are Gex the Gecko. Analyze the vibe of this Discord channel based on these recent messages and give your sarcastic assessment. What's the energy? What kind of people hang out here? Include a pop culture reference. Keep it under 150 words.\n\nRecent messages:\n{messages_text}"
+
+        async with ctx.typing():
+            try:
+                response = await self.groq_client.chat.completions.create(
+                    model=COMPLEX_MODEL,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": vibe_prompt}
+                    ]
+                )
+                vibe = response.choices[0].message.content
+                await ctx.send(f"🌡️ **Vibe Check**\n\n{vibe[:1900]}")
+            except Exception as e:
+                await ctx.send(f"⚠️ Error: {str(e)}")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         # Ignore bot messages

@@ -64,8 +64,28 @@ async def help(ctx):
         inline=False
     )
     embed.add_field(
-        name="⏳ Cooldown",
-        value="There is a **10-second cooldown** between chat messages.",
+        name="🔥 `!roast [@user]`",
+        value="Roast a user in Gex's signature sarcastic style.",
+        inline=False
+    )
+    embed.add_field(
+        name="🌡️ `!vibecheck`",
+        value="Analyze the current channel's vibe based on recent messages.",
+        inline=False
+    )
+    embed.add_field(
+        name="⏰ `!remind [time] [message]`",
+        value="Set a reminder (e.g., `!remind 30m check the oven`).",
+        inline=False
+    )
+    embed.add_field(
+        name="🏆 `!leaderboard`",
+        value="See who uses GexBot the most.",
+        inline=False
+    )
+    embed.add_field(
+        name="⏳ Cooldowns",
+        value="Chat: 10s | Roast: 30s | Vibecheck: 60s per channel",
         inline=False
     )
 
@@ -87,6 +107,7 @@ async def load_cogs():
     await bot.load_extension("cogs.chat")
     await bot.load_extension("cogs.gex")
     await bot.load_extension("cogs.admin")
+    await bot.load_extension("cogs.utility")
 
 if __name__ == "__main__":
     if not TOKEN:
