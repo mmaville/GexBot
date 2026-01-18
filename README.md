@@ -1,32 +1,44 @@
 # GexBot
-A discord bot that provides a random image from the designated folder, along with a random quote from a text file.
+A Discord bot that sends a random Gex image along with a random quote.
 
 ## Setup
 
 1. Clone the repository to a server/computer.
 
-1. Create or select a bot in the [Discord Developer Portal](https://discord.com/developers). (`Applications` > `New Application`) or (`Applications` > `My Applications` > `bot-name`).
+2. Install the required dependencies:
+   ```
+   pip install discord.py python-dotenv
+   ```
 
-2. Select `Settings` > `Bot` to display the `Build-a-Bot` page.
+3. Create or select a bot in the [Discord Developer Portal](https://discord.com/developers):
+   - `Applications` > `New Application` (or select an existing one)
+   - Navigate to `Bot` in the left sidebar
+   - Click `Reset Token` or `Copy` to obtain the bot token
 
-3. Find the Token section of the page and click `Copy` to obtain the token.
+4. Create a `.env` file in the project root and add your token:
+   ```
+   DISCORD_TOKEN=your_token_here
+   ```
 
-4. Paste the token into the value of the `discord_token` parameter in `bot.py`.
+5. Run the bot from the project directory:
+   ```
+   python bot.py
+   ```
 
-5. Navigate to the local repository on the machine and run the command `python bot.py` to initiaze the bot.
+### Requirements
 
-### Dependencies
-
-* DiscordPy - https://discordpy.readthedocs.io/en/latest/
+- Python 3.8+
+- [discord.py](https://discordpy.readthedocs.io/en/latest/)
+- [python-dotenv](https://pypi.org/project/python-dotenv/)
 
 ### Text File
 
-All quotes must be contained in the `textlist.txt` file located at the root of the project. Quotes are separated by line breaks. Quotation marks are not required.
+Quotes are stored in `textlist.txt` at the root of the project. Each quote is on its own line.
 
 ### Images Folder
 
-All image files must be of a valid image filetype and located in `./images/`. The bot pulls a random image from this directory.
+Image files are stored in `./images/`. The bot selects a random image from this directory.
 
 ## Usage
 
-* `!gex` - This command displays a random image and quote of Gex the Gecco.
+`!gex` - Sends a random image and quote of Gex the Gecko.

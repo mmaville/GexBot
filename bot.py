@@ -1,10 +1,12 @@
-import random
-from discord.ext.commands import Bot
-from discord import File
 import os
-import math
+import random
 
-discord_token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+from discord import File
+from discord.ext.commands import Bot
+from dotenv import load_dotenv
+
+load_dotenv()
+discord_token = os.getenv('DISCORD_TOKEN')
 
 bot = Bot(command_prefix='!')
 
