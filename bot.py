@@ -1,30 +1,52 @@
-import random
-from discord.ext.commands import Bot
-from discord import File
 import os
-import math
+import random
+from pathlib import Path
 
-discord_token = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+import discord
+from discord.ext import commands
 
-bot = Bot(command_prefix='!')
+# Load token from environment variable
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+
+# Configure intents (message_content required for prefix commands)
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+# Paths
+IMAGES_DIR = Path("images")
+TEXT_FILE = Path("textlist.txt")
+
 
 @bot.event
 async def on_ready():
-    print("Login as")
-    print(bot.user.name)
+    print(f"Logged in as {bot.user.name}")
     print("-------")
 
-@bot.command(name='gex')
-async def random_gex(ctx):
-    if os.path.exists('textlist.txt'):
-        lines = open('textlist.txt', encoding='utf-8').read().splitlines()
-        text = random.choice(lines)
 
-        image = os.listdir('./images/')
-        imgString = random.choice(image)
-        path = "./images/" + imgString
+@bot.command(name="gex")
+async def random_gex(ctx: commands.Context):
+    """Send a random Gex image and quote."""
+    if not TEXT_FILE.exists():
+        await ctx.send("Error: textlist.txt not found.")
+        return
 
-    await ctx.send(file=File(path))
+    if not IMAGES_DIR.exists() or not any(IMAGES_DIR.iterdir()):
+        await ctx.send("Error: No images found.")
+        return
+
+    with open(TEXT_FILE, encoding="utf-8") as f:
+        lines = f.read().splitlines()
+
+    text = random.choice(lines)
+    image_path = random.choice(list(IMAGES_DIR.iterdir()))
+
+    await ctx.send(file=discord.File(image_path))
     await ctx.send(text)
 
-bot.run(discord_token)
+
+if __name__ == "__main__":
+    if not DISCORD_TOKEN:
+        raise ValueError("DISCORD_TOKEN environment variable not set")
+    bot.run(DISCORD_TOKEN)
