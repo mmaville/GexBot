@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
-import asyncio
 import itertools
 import os
 
@@ -74,8 +73,8 @@ async def help(ctx):
         inline=False
     )
     embed.add_field(
-        name="⏰ `!remind [time] [message]`",
-        value="Set a reminder (e.g., `!remind 30m check the oven`).",
+        name="⏰ `!remindme [time] [message]`",
+        value="Set a reminder (e.g., `!remindme 30m check the oven`).",
         inline=False
     )
     embed.add_field(
@@ -103,7 +102,8 @@ async def on_command_error(ctx, error):
         await ctx.send(f"🚫 Only the **{REQUIRED_ROLE}** role can use me.")
 
 # --- Load Cogs ---
-async def load_cogs():
+@bot.event
+async def setup_hook():
     await bot.load_extension("cogs.chat")
     await bot.load_extension("cogs.gex")
     await bot.load_extension("cogs.admin")
@@ -114,6 +114,4 @@ if __name__ == "__main__":
         raise ValueError("DISCORD_BOT_TOKEN environment variable not set")
     if not GROQ_API_KEY:
         raise ValueError("GROQ_API_KEY environment variable not set")
-
-    asyncio.run(load_cogs())
     bot.run(TOKEN)

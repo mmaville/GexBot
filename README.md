@@ -69,7 +69,7 @@ All commands require the **Gexy** role.
 | `!roast [@user]` | Roast a user in Gex's signature sarcastic style. |
 | `!vibecheck` | Analyze the current channel's vibe based on recent messages. |
 | `!gex` | Displays a random image and quote attributed to Gex the Gecko. |
-| `!remind [time] [message]` | Set a reminder (e.g., `!remind 30m check the oven`). |
+| `!remindme [time] [message]` | Set a reminder (e.g., `!remindme 30m check the oven`). |
 | `!leaderboard` | See who uses GexBot the most. |
 | `!status [action] [text]` | Changes the bot's status. Actions: `playing`, `watching`, `listening`. |
 | `!help` | Lists valid commands and their actions. |

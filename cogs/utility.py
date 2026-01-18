@@ -93,7 +93,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     @commands.has_role(REQUIRED_ROLE)
-    async def remind(self, ctx, time_str: str, *, message: str):
+    async def remindme(self, ctx, time_str: str, *, message: str):
         """Set a reminder. Usage: !remind 30m check the oven"""
         seconds = parse_time(time_str)
 
