@@ -7,6 +7,7 @@ import itertools
 import random
 import re
 import os
+import time
 from pathlib import Path
 
 load_dotenv()
@@ -90,6 +91,8 @@ async def on_ready():
 
 # --- Memory ---
 memory = collections.defaultdict(list)
+active_chat_sessions = {}  # {channel_id: last_interaction_timestamp}
+CHAT_SESSION_TIMEOUT = 300  # 5 minutes in seconds
 
 # --- Custom Help Command ---
 @bot.command()
@@ -102,8 +105,8 @@ async def help(ctx):
     )
     
     embed.add_field(
-        name="💬 `!chat [message]`", 
-        value="Starts a conversation with the AI. I'll remember the last 10 messages in this channel.", 
+        name="💬 `!chat [message]`",
+        value="Starts a conversation with the AI. I'll remember the last 10 messages in this channel.\nAfter using `!chat`, you can continue with `~message` for 5 minutes.",
         inline=False
     )
     embed.add_field(
@@ -132,31 +135,76 @@ async def help(ctx):
     
     await ctx.send(embed=embed)
 
-# --- Chat Command ---
-@bot.command()
-@commands.has_role(REQUIRED_ROLE)
-@commands.cooldown(1, 10, commands.BucketType.user)
-async def chat(ctx, *, user_input: str):
-    channel_id = ctx.channel.id
+# --- Chat Logic ---
+async def process_chat(channel, user_input: str):
+    """Process a chat message and return AI response."""
+    channel_id = channel.id
     memory[channel_id].append({"role": "user", "content": user_input})
-    if len(memory[channel_id]) > 10: memory[channel_id] = memory[channel_id][-10:]
+    if len(memory[channel_id]) > 10:
+        memory[channel_id] = memory[channel_id][-10:]
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + memory[channel_id]
 
     # Select model based on input complexity
     model = select_model(user_input)
 
-    async with ctx.typing():
-        try:
-            response = await groq_client.chat.completions.create(
-                model=model,
-                messages=messages
-            )
-            ai_response = response.choices[0].message.content
-            memory[channel_id].append({"role": "assistant", "content": ai_response})
-            await ctx.send(ai_response[:2000])
-        except Exception as e:
-            await ctx.send(f"⚠️ Error: {str(e)}")
+    async with channel.typing():
+        response = await groq_client.chat.completions.create(
+            model=model,
+            messages=messages
+        )
+        ai_response = response.choices[0].message.content
+        memory[channel_id].append({"role": "assistant", "content": ai_response})
+
+    # Update session timestamp
+    active_chat_sessions[channel_id] = time.time()
+    return ai_response
+
+@bot.command()
+@commands.has_role(REQUIRED_ROLE)
+@commands.cooldown(1, 10, commands.BucketType.user)
+async def chat(ctx, *, user_input: str):
+    try:
+        ai_response = await process_chat(ctx.channel, user_input)
+        await ctx.send(ai_response[:2000])
+    except Exception as e:
+        await ctx.send(f"⚠️ Error: {str(e)}")
+
+# --- Tilde Message Listener ---
+@bot.event
+async def on_message(message):
+    # Ignore bot messages
+    if message.author.bot:
+        return
+
+    # Check for ~ prefix in active chat sessions
+    if message.content.startswith("~"):
+        channel_id = message.channel.id
+
+        # Check if there's an active session
+        if channel_id in active_chat_sessions:
+            last_time = active_chat_sessions[channel_id]
+
+            # Check if session is still valid (within 5 minutes)
+            if time.time() - last_time <= CHAT_SESSION_TIMEOUT:
+                # Check if user has the required role
+                if isinstance(message.author, discord.Member):
+                    role = discord.utils.get(message.author.roles, name=REQUIRED_ROLE)
+                    if role:
+                        user_input = message.content[1:].strip()  # Remove ~ prefix
+                        if user_input:
+                            try:
+                                ai_response = await process_chat(message.channel, user_input)
+                                await message.channel.send(ai_response[:2000])
+                            except Exception as e:
+                                await message.channel.send(f"⚠️ Error: {str(e)}")
+                            return
+            else:
+                # Session expired, remove it
+                del active_chat_sessions[channel_id]
+
+    # Process commands normally
+    await bot.process_commands(message)
 
 # --- Gex Command ---
 @bot.command(name="gex")
@@ -206,4 +254,9 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.MissingRole):
         await ctx.send(f"🚫 Only the **{REQUIRED_ROLE}** role can use me.")
 
-bot.run(TOKEN)
+if __name__ == "__main__":
+    if not TOKEN:
+        raise ValueError("DISCORD_BOT_TOKEN environment variable not set")
+    if not GROQ_API_KEY:
+        raise ValueError("GROQ_API_KEY environment variable not set")
+    bot.run(TOKEN)
