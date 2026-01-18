@@ -63,10 +63,14 @@ All commands require the **Gexy** role.
 
 | Command | Description |
 |---------|-------------|
-| `!gex` | Displays a random image and quote attributed to Gex the Gecko. |
 | `!chat [message]` | Chat with the AI. Remembers the last 10 messages per channel. |
 | `~[message]` | Continue chatting without the `!chat` prefix (active for 5 minutes after last chat). |
 | `!clear` | Clears the chat history (memory) for the current channel. |
+| `!roast [@user]` | Roast a user in Gex's signature sarcastic style. |
+| `!vibecheck` | Analyze the current channel's vibe based on recent messages. |
+| `!gex` | Displays a random image and quote attributed to Gex the Gecko. |
+| `!remind [time] [message]` | Set a reminder (e.g., `!remind 30m check the oven`). |
+| `!leaderboard` | See who uses GexBot the most. |
 | `!status [action] [text]` | Changes the bot's status. Actions: `playing`, `watching`, `listening`. |
 | `!help` | Lists valid commands and their actions. |
 
@@ -76,12 +80,14 @@ All commands require the **Gexy** role.
 GexBot/
 ├── bot.py              # Main bot file
 ├── cogs/
-│   ├── chat.py         # Chat commands (!chat, !clear, ~ session shortcut)
+│   ├── chat.py         # Chat commands (!chat, !clear, !roast, !vibecheck, ~ shortcut)
 │   ├── gex.py          # Gex command (!gex)
-│   └── admin.py        # Admin commands (!status)
+│   ├── admin.py        # Admin commands (!status)
+│   └── utility.py      # Utility commands (!remind, !leaderboard)
 ├── system_prompt.md    # AI personality configuration
 ├── textlist.txt        # Hardcoded Gex quotes
 ├── images/             # Gex images
+├── leaderboard.json    # Persistent leaderboard data (auto-generated)
 ├── .env                # Environment variables (not in repo)
 └── docker-compose.yml
 ```
