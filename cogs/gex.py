@@ -1,9 +1,10 @@
-import discord
-from discord.ext import commands
 import random
 from pathlib import Path
 
-REQUIRED_ROLE = "Gexy"
+import discord
+from discord.ext import commands
+
+from config import REQUIRED_ROLE
 IMAGES_DIR = Path("images")
 TEXT_FILE = Path("textlist.txt")
 

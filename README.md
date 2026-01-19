@@ -13,12 +13,17 @@ A Discord bot powered by Groq AI that provides chat functionality, random Gex im
 
 ### Environment Variables
 
-Create a `.env` file in the root directory with the following:
+Copy `.env.example` to `.env` and fill in your values:
 
 ```
-DISCORD_BOT_TOKEN=your_discord_bot_token
-GROQ_API_KEY=your_groq_api_key
+cp .env.example .env
 ```
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DISCORD_BOT_TOKEN` | Yes | Your Discord bot token |
+| `GROQ_API_KEY` | Yes | Your Groq API key |
+| `REQUIRED_ROLE` | No | Role required to use commands (default: `Gexy`) |
 
 ### Dependencies
 
@@ -59,7 +64,7 @@ To stop the bot:
 
 ## Commands
 
-All commands require the **Gexy** role.
+All commands require the configured role (default: **Gexy**).
 
 | Command | Description |
 |---------|-------------|
@@ -79,6 +84,7 @@ All commands require the **Gexy** role.
 ```
 GexBot/
 ├── bot.py              # Main bot file
+├── config.py           # Centralized configuration (loads from .env)
 ├── cogs/
 │   ├── chat.py         # Chat commands (!chat, !clear, !roast, !vibecheck, ~ shortcut)
 │   ├── gex.py          # Gex command (!gex)
@@ -89,5 +95,6 @@ GexBot/
 ├── images/             # Gex images
 ├── leaderboard.json    # Persistent leaderboard data (auto-generated)
 ├── .env                # Environment variables (not in repo)
+├── .env.example        # Template for environment variables
 └── docker-compose.yml
 ```

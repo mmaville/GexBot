@@ -1,15 +1,9 @@
+import itertools
+
 import discord
 from discord.ext import commands, tasks
-from dotenv import load_dotenv
-import itertools
-import os
 
-load_dotenv()
-
-# --- Configuration ---
-TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-REQUIRED_ROLE = "Gexy"
+from config import DISCORD_BOT_TOKEN, GROQ_API_KEY, REQUIRED_ROLE
 
 # Initialize Bot
 intents = discord.Intents.default()
@@ -110,8 +104,8 @@ async def setup_hook():
     await bot.load_extension("cogs.utility")
 
 if __name__ == "__main__":
-    if not TOKEN:
+    if not DISCORD_BOT_TOKEN:
         raise ValueError("DISCORD_BOT_TOKEN environment variable not set")
     if not GROQ_API_KEY:
         raise ValueError("GROQ_API_KEY environment variable not set")
-    bot.run(TOKEN)
+    bot.run(DISCORD_BOT_TOKEN)

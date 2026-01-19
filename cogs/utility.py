@@ -1,13 +1,13 @@
-import discord
-from discord.ext import commands, tasks
-import asyncio
 import json
 import re
-from pathlib import Path
-from datetime import datetime, timedelta
 from collections import defaultdict
+from datetime import datetime, timedelta
+from pathlib import Path
 
-REQUIRED_ROLE = "Gexy"
+import discord
+from discord.ext import commands, tasks
+
+from config import REQUIRED_ROLE
 LEADERBOARD_FILE = Path("leaderboard.json")
 
 

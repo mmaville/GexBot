@@ -1,15 +1,13 @@
+import collections
+import re
+import time
+from pathlib import Path
+
 import discord
 from discord.ext import commands
 from groq import AsyncGroq
-import collections
-import time
-import re
-import os
-from pathlib import Path
 
-# --- Configuration ---
-GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-REQUIRED_ROLE = "Gexy"
+from config import GROQ_API_KEY, REQUIRED_ROLE
 SYSTEM_PROMPT_FILE = Path("system_prompt.md")
 SYSTEM_PROMPT = SYSTEM_PROMPT_FILE.read_text(encoding="utf-8").strip()
 

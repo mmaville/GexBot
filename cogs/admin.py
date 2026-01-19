@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-REQUIRED_ROLE = "Gexy"
+from config import REQUIRED_ROLE
 
 
 class Admin(commands.Cog):
