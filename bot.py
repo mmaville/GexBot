@@ -77,6 +77,21 @@ async def help(ctx):
         inline=False
     )
     embed.add_field(
+        name="💩 `!shitmovie`",
+        value="Find a terrible movie. Use `curated: True` for cult classics.",
+        inline=False
+    )
+    embed.add_field(
+        name="🎲 `!shitroulette`",
+        value="Get a random bad movie trailer. Use `curated: True` for curated picks.",
+        inline=False
+    )
+    embed.add_field(
+        name="⚖️ `!judge [movie]`",
+        value="Calculate the 'Irony Gap' between critic and audience scores.",
+        inline=False
+    )
+    embed.add_field(
         name="⏳ Cooldowns",
         value="Chat: 10s | Roast: 30s | Vibecheck: 60s per channel",
         inline=False
@@ -102,6 +117,7 @@ async def setup_hook():
     await bot.load_extension("cogs.gex")
     await bot.load_extension("cogs.admin")
     await bot.load_extension("cogs.utility")
+    await bot.load_extension("cogs.movies")
 
 if __name__ == "__main__":
     if not DISCORD_BOT_TOKEN:
